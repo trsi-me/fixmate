@@ -2,5 +2,5 @@ Flask==3.0.0
 gunicorn==23.0.0
 scikit-learn==1.4.0
 numpy==1.26.4
-pandas==2.2.0
 joblib==1.3.2
+# pandas فقط لتدريب النموذج محلياً (backend/ai/train_model.py) — غير مطلوب على السيرفر
