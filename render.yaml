@@ -1,0 +1,11 @@
+# خدمة ويب واحدة: Flask يخدم الـ API + ملفات Flutter من backend/web/
+# اربط المستودع من لوحة Render ثم استخدم هذا الـ Blueprint أو انسخ الأوامر يدوياً.
+services:
+  - type: web
+    name: fixmate
+    runtime: python
+    plan: free
+    rootDir: .
+    # الواجهة مبنية محلياً داخل backend/web/ ومرفوعة مع Git
+    buildCommand: pip install -r backend/requirements.txt
+    startCommand: cd backend && gunicorn --bind 0.0.0.0:$PORT --workers 1 app:app
