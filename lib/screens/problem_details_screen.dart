@@ -1,14 +1,20 @@
 import 'package:flutter/material.dart';
 
 import '../models/issue.dart';
+import '../services/diagnostic_sound.dart';
 import '../widgets/app_theme.dart';
 import 'result_evaluation_screen.dart';
 
-class ProblemDetailsScreen extends StatelessWidget {
+class ProblemDetailsScreen extends StatefulWidget {
   final String deviceType;
   final String deviceName;
   final String issueName;
   final Issue? issue;
+  final List<String>? overrideCauses;
+  final List<String>? overrideSolutions;
+  final List<String>? overrideWarnings;
+  /// من مسار الحاسب بعد اختيار المشكلة: صوت ثانٍ عند ظهور شاشة الحل.
+  final bool playSolutionSound;
 
   const ProblemDetailsScreen({
     super.key,
@@ -16,18 +22,43 @@ class ProblemDetailsScreen extends StatelessWidget {
     required this.deviceName,
     required this.issueName,
     this.issue,
+    this.overrideCauses,
+    this.overrideSolutions,
+    this.overrideWarnings,
+    this.playSolutionSound = false,
   });
 
   @override
+  State<ProblemDetailsScreen> createState() => _ProblemDetailsScreenState();
+}
+
+class _ProblemDetailsScreenState extends State<ProblemDetailsScreen> {
+  @override
+  void initState() {
+    super.initState();
+    if (widget.playSolutionSound) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        DiagnosticSound.solutionShown();
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final causes = issue?.causesList ?? _getFallbackCauses(deviceType, issueName);
-    final solutions = issue?.solutionsList ?? _getFallbackSolutions(deviceType, issueName);
-    final warnings = issue?.warningsList ?? _getFallbackWarnings(deviceType);
+    final causes = widget.overrideCauses ??
+        widget.issue?.causesList ??
+        _getFallbackCauses(widget.deviceType, widget.issueName);
+    final solutions = widget.overrideSolutions ??
+        widget.issue?.solutionsList ??
+        _getFallbackSolutions(widget.deviceType, widget.issueName);
+    final warnings = widget.overrideWarnings ??
+        widget.issue?.warningsList ??
+        _getFallbackWarnings(widget.deviceType);
 
     return Scaffold(
       backgroundColor: AppTheme.white,
       appBar: AppBar(
-        title: Text(issueName),
+        title: Text(widget.issueName),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
@@ -54,7 +85,7 @@ class ProblemDetailsScreen extends StatelessWidget {
               isWarning: true,
             ),
             const SizedBox(height: 24),
-            _CallTechnicianSection(),
+            const _CallTechnicianSection(),
             const SizedBox(height: 32),
             SizedBox(
               width: double.infinity,
@@ -64,8 +95,8 @@ class ProblemDetailsScreen extends StatelessWidget {
                     context,
                     MaterialPageRoute(
                       builder: (context) => ResultEvaluationScreen(
-                        deviceName: deviceName,
-                        issueName: issueName,
+                        deviceName: widget.deviceName,
+                        issueName: widget.issueName,
                       ),
                     ),
                   );
@@ -190,6 +221,8 @@ class _Section extends StatelessWidget {
 }
 
 class _CallTechnicianSection extends StatelessWidget {
+  const _CallTechnicianSection();
+
   @override
   Widget build(BuildContext context) {
     return Container(

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../widgets/app_theme.dart';
 import '../widgets/device_data.dart';
+import 'computer_brand_screen.dart';
 import 'issue_selection_screen.dart';
 
 class DeviceSelectionScreen extends StatelessWidget {
@@ -80,15 +81,28 @@ class DeviceSelectionScreen extends StatelessWidget {
               icon: _getIcon(device['icon']!),
               label: device['name']!,
               onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => IssueSelectionScreen(
-                      deviceType: device['id']!,
-                      deviceName: device['name']!,
+                final id = device['id']!;
+                final name = device['name']!;
+                if (id == 'حاسب') {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ComputerBrandScreen(
+                        deviceName: name,
+                      ),
                     ),
-                  ),
-                );
+                  );
+                } else {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => IssueSelectionScreen(
+                        deviceType: id,
+                        deviceName: name,
+                      ),
+                    ),
+                  );
+                }
               },
             );
           },
